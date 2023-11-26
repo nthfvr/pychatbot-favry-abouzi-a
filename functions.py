@@ -14,34 +14,25 @@ print(files_names)
 
 def noms_presidents(noms_fichiers):
     # Renvoie une liste des noms des présidents à partir des noms des fichiers.
-
     liste_presidents = []
 
     # Supprime les prefixes "Nomination_" et suffixes ".txt"  des noms des fichiers.
-
     for i in range(len(noms_fichiers)):
         noms_fichiers[i] = noms_fichiers[i].strip("Nomination_")
-
         noms_fichiers[i] = noms_fichiers[i].strip(".txt")
-
         noms_fichiers[i] = noms_fichiers[i].strip("cleanedtxt")
 
     # Supprime tous les caractères qui ne font pas partie de l'alphabet dans les noms des présidents.
-
     for nom in noms_fichiers:
-
         nouveau_nom = ""
-
         for letter in nom:
-
             if letter.isalpha():
                 nouveau_nom += letter
-
         liste_presidents.append(nouveau_nom)
 
     dictionnaire_presidents = dict.fromkeys(set(liste_presidents))
-
-    return liste_presidents, dictionnaire_presidents
+    return liste_presidents,dictionnaire_presidents
+  
 # Fonction pour convertir le texte en minuscules
 def minuscule():
     # on recupere les noms des fichier dans "speeches"
