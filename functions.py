@@ -12,6 +12,27 @@ directory = "./speeches"
 files_names = list_of_files(directory, "txt")
 print(files_names)
 
+def noms_presidents(noms_fichiers):
+    # Renvoie une liste des noms des présidents à partir des noms des fichiers.
+        liste_presidents = []
+
+        # Supprime les préfixes "Nomination_" et suffixes ".txt" des noms des fichiers.
+        for i in range(len(noms_fichiers)):
+            noms_fichiers[i] = noms_fichiers[i].replace("Nomination_", "")
+            noms_fichiers[i] = noms_fichiers[i].replace(".txtcleanedtxt", "")
+
+        # Supprime tous les caractères qui ne font pas partie de l'alphabet dans les noms des présidents.
+        for nom in noms_fichiers:
+            nouveau_nom = ""
+            for letter in nom:
+                if letter.isalpha() or letter.isspace():  # Ajout de la gestion des espaces dans les noms
+                    nouveau_nom += letter
+            liste_presidents.append(nouveau_nom.strip())  # Utilise strip() pour enlever les espaces en début et fin
+
+        dictionnaire_presidents = dict.fromkeys(set(liste_presidents))
+        return liste_presidents, dictionnaire_presidents
+
+print(noms_presidents(files_names))
 
 
 # Fonction pour convertir le texte en minuscules
@@ -47,6 +68,7 @@ def minuscule():
             # Écriture du contenu converti dans le fichier résultant
             for ligne in resultat:
                 fichier_minuscule.write(ligne)
+
 
 
 # Fonction pour supprimer la ponctuation
