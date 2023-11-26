@@ -170,3 +170,44 @@ def IDF(repertoire):
         score_idf[cle] = math.log10((nb_doc / (dico_occurence_mot[cle]+1)))
     # Retourne le dictionnaire final des scores IDF pour chaque mot
     return score_idf
+
+
+
+def calculer_tfidf(repertoire):
+    files_names = list_of_files(repertoire, "txt")
+    set_mots = []
+    for names in files_names:
+        with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            liste_de_mots = contenu.split()
+            for mots in liste_de_mots:
+                set_mots.append(mots)
+    set_mots=list(set(set_mots))
+
+
+    idf=IDF("cleaned\\")
+
+    matrice_tfidf = [[] for i in range(len(set_mots))]
+    i=0
+    for names in files_names:
+        i=0
+        mot_du_fichier = set([])
+        with open("cleaned\\" + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            tf_fichier = tf(contenu)
+            liste_de_mots = contenu.split()
+            for mots in liste_de_mots:
+                mot_du_fichier.add(mots)
+            for mot in set_mots:
+                if mot in mot_du_fichier:
+                    tf_mot=tf_fichier[mot]
+                    idf_mot=idf[mot]
+                    matrice_tfidf[i].append(tf_mot*idf_mot)
+                else :
+                    matrice_tfidf[i].append(0)
+                i+=1
+    #creation dictionaire pour associer le mot a ses scores tf-idf
+    dico_matrice={}
+    for i in range(len(set_mots)):
+        dico_matrice[set_mots[i]]=matrice_tfidf[i]
+    return [(matrice_tfidf), dico_matrice]
