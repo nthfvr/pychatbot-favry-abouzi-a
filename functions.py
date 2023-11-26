@@ -281,3 +281,47 @@ def mots_repete_chirac():
         if occurrences[keys] == maximum:
             liste_mot_max.append(keys)
     return liste_mot_max
+
+
+
+
+
+
+#6
+def mots_evoques():
+    filesnames = list_of_files(("./cleaned"), "txt")
+    set_mots = set([])
+    for names in filesnames:
+        with open("cleaned\\" + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            # Division du contenu en une liste de mots
+            liste_de_mots = contenu.split()
+            # Ajout de chaque mot à l'ensemble des mots uniques
+            for mots in liste_de_mots:
+                set_mots.add(mots)
+    # Initialisation d'un dictionnaire pour stocker le nombre d'occurrences de chaque mot dans les documents
+    dico_occurence_mot = {}
+    # Boucle pour chaque mot unique dans l'ensemble de mots
+
+    filename = list_of_files("textes_president_en_un_meme_fichier\\", "txt")
+    for mots in set_mots:
+        # Initialisation du compteur d'occurrences pour le mot en cours
+        cpt_occu_doc = 0
+        # Boucle pour chaque fichier dans le répertoire
+        for names in filename:
+            # Lecture du contenu du fichier
+            with open("textes_president_en_un_meme_fichier\\" + names, "r", encoding="utf-8") as fichier_cleaned:
+                contenu = fichier_cleaned.read()
+                # Division du contenu en une liste de mots
+                liste_de_mots = contenu.split()
+                # Vérification de l'occurrence du mot dans le fichier
+                if mots in liste_de_mots:
+                    cpt_occu_doc += 1
+        # Stockage du nombre d'occurrences du mot dans le dictionnaire
+        dico_occurence_mot[mots] = cpt_occu_doc
+    liste = []
+    mot_nonimportant = mot_non_important("cleaned\\")
+    for mot, occu in dico_occurence_mot.items():
+        if occu == len(filename) and mot not in mot_nonimportant:
+            liste.append(mot)
+    return liste
