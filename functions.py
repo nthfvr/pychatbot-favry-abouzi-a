@@ -32,7 +32,7 @@ def noms_presidents(noms_fichiers):
 
     dictionnaire_presidents = dict.fromkeys(set(liste_presidents))
     return liste_presidents,dictionnaire_presidents
-
+  
 # Fonction pour convertir le texte en minuscules
 def minuscule():
     # on recupere les noms des fichier dans "speeches"
