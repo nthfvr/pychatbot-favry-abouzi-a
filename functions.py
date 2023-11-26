@@ -384,6 +384,22 @@ def mots_evoques():
     return liste
 
 
+def choix():
+    print("---------------------------------------------------------------------------------------------------------------------------")
+    print("Sélectionner une option :")
+    print("1 :Afficher la liste des mots les moins importants dans le corpus de documents")
+    print("2 :Afficher le(s) mot(s) ayant le score TD-IDF le plus élevé")
+    print("3 :Indiquer le(s) mot(s) le(s) plus répété(s) par le président Chirac")
+    print("4 :Indiquer le(s) fichiers(s) du(des) président(s) qui a (ont) parlé de la « Nation » et celui qui l’a répété le plus de fois")
+    print("5 :Indiquer le premier président à parler du climat et/ou de l’écologie")
+    print("6 :Hormis les mots dits « non importants », quel(s) est(sont) le(s) mot(s) que tous les présidents ont évoqués.")
+    print("---------------------------------------------------------------------------------------------------------------------------")
+    liste_choix = [str(i) for i in range(1,7)]
+    choix = None
+    while not choix in liste_choix:
+        choix = input("Quel est votre choix: ")
+    return choix
+
 def menu():
     running = True
     while running:
