@@ -216,3 +216,25 @@ def mot_non_important(repertoire):
     files_names=list_of_files(repertoire, "txt")
     list_mot_0 = [k for (k, val) in tfidf[1].items() if val==[0 for i in range(len(files_names))]]
     return (list_mot_0)
+
+#2
+def score_eleve(repertoire):
+    files_names=list_of_files(repertoire, "txt")
+    list_mot_0 = []
+    dico_valeur_mot={}
+    for (k, val) in tfidf[1].items():
+        somme=0
+        for valeur in val:
+            somme+=valeur
+        dico_valeur_mot[k]=somme/len(files_names)
+    liste_valeur=list(dico_valeur_mot.values())
+    maximum = liste_valeur[0]
+    # Parcourir la liste pour trouver le maximum
+    for element in liste_valeur:
+        if element > maximum:
+            maximum = element
+    liste_mot_max=[]
+    for keys in dico_valeur_mot.keys():
+        if dico_valeur_mot[keys]==maximum:
+            liste_mot_max.append(keys)
+    return liste_mot_max
