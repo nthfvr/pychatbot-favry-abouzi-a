@@ -210,6 +210,9 @@ def calculer_tfidf(repertoire):
         dico_matrice[set_mots[i]]=matrice_tfidf[i]
     return [(matrice_tfidf), dico_matrice]
 
+
+
+## Fonctionalité à developper
 #1
 tfidf=(calculer_tfidf("cleaned\\"))
 def mot_non_important(repertoire):
@@ -236,5 +239,45 @@ def score_eleve(repertoire):
     liste_mot_max=[]
     for keys in dico_valeur_mot.keys():
         if dico_valeur_mot[keys]==maximum:
+            liste_mot_max.append(keys)
+    return liste_mot_max
+
+def rassemblement_discours():       #permet de rassembler les discours d'un meme president dans un meme fichier(pour fct3 et 6)
+    nomspresident = noms_presidents(files_names)[0]
+    index_element = nomspresident.index('GiscarddEstaing')
+    nomspresident[index_element] = 'Giscard dEstaing'
+
+    nomspresident = list(set(nomspresident))
+    filesnames = list_of_files(("./cleaned"), "txt")
+
+    for nom in nomspresident:
+        for filename in filesnames:
+            if nom in filename:
+                with open("textes_president_en_un_meme_fichier\\" + nom + ".txt", "a", encoding="utf-8") as fichier1:
+                    with open("cleaned\\" + filename, "r", encoding="utf-8") as fichier2:
+                        contenu = fichier2.read()
+                        fichier1.write(contenu)
+rassemblement_discours()
+
+#3
+def mots_repete_chirac():
+    occurrences = {}
+    with open("textes_president_en_un_meme_fichier\\Chirac.txt", "r", encoding="utf-8") as fichier_cleaned:
+        contenu = fichier_cleaned.read()
+        liste_de_mots = contenu.split()
+        for mot in liste_de_mots:
+            if mot in occurrences:
+                occurrences[mot] += 1
+            else:
+                occurrences[mot] = 1
+    liste_valeur = list(occurrences.values())
+    maximum = liste_valeur[0]
+    # Parcourir la liste pour trouver le maximum
+    for element in liste_valeur:
+        if element > maximum:
+            maximum = element
+    liste_mot_max = []
+    for keys in occurrences.keys():
+        if occurrences[keys] == maximum:
             liste_mot_max.append(keys)
     return liste_mot_max
