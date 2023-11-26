@@ -101,8 +101,7 @@ def ponctuation():
             with open("cleaned\\" + names, "w", encoding="utf-8") as fichier_cleaned:
                 fichier_cleaned.write(texte_nettoye)
                 texte_nettoye = ""
-minuscule()
-ponctuation()
+
 
 def tf(chaine):
 #Renvoie le nombre d'occurences de chaque mot dans un fichier
