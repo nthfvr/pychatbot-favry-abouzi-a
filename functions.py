@@ -382,3 +382,42 @@ def mots_evoques():
         if occu == len(filename) and mot not in mot_nonimportant:
             liste.append(mot)
     return liste
+
+
+def menu():
+    running = True
+    while running:
+        choix_utilisateur = choix()
+        match choix_utilisateur:
+            case "1":
+                print("Liste des mots les moins importants: ")
+                for value in mot_non_important("cleaned\\"):
+                    print(value)
+
+            case "2":
+                print("liste des mots au score le plus élévé: ")
+                for value in score_eleve("cleaned\\"):
+                    print(value)
+
+            case "3":
+                print("liste des mots au score le plus élévé: ")
+                for value in score_eleve("cleaned\\"):
+                    print(value)
+
+            case "4":
+                resultat = mot_max_occurrences("cleaned",".txt","nation")
+                print("Fichiers avec le mot 'nation' :", resultat[0])
+                print("Fichier avec le plus grand nombre d'occurrences de 'nation' :", resultat[1])
+            case "5":
+                resultat = premier_president_ecologie_climat("cleaned",".txt")
+                if resultat:
+                    print(f"Le premier président à parler d'écologie ou de climat est : {resultat}")
+                else:
+                    print("Aucun président ne mentionne l'écologie ou le climat.")
+            case "6":
+                print("Mots évoqués par tous les présidents")
+                for value in mots_evoques():
+                    print(value)
+
+            case other:
+                choix_utilisateur = choix()
