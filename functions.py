@@ -316,8 +316,30 @@ def mot_max_occurrences(directory, extension, mot_recherche):
 
     return  fichiers_avec_mot,fichier_max_occurrences
 
+#5
+def premier_president_ecologie_climat(directory, extension):
+    # Liste des fichiers dans le répertoire avec l'extension spécifiée
+    noms_fichier_local = list_of_files(directory, extension)
 
+    # Initialiser le nom du premier président à parler d'écologie ou de climat
+    premier_president_ecologie_climat = ""
 
+    for filename in noms_fichier_local:
+        liste_temp = []
+        # Construire le chemin complet du fichier
+        chemin_fichier = os.path.join(directory, filename)
+
+        # Lire le contenu du fichier
+        with open(chemin_fichier, 'r', encoding='utf-8') as fichier:
+            contenu_president = fichier.read()
+            #ajoute le nom du fichier à une liste pour pouvoir utiliser la fonction nom président dessus
+            liste_temp.append(filename)
+            # Vérifier si le fichier mentionne l'écologie ou le climat
+            if 'écologie' in contenu_president or 'climat' in contenu_president:
+                premier_president_ecologie_climat = noms_presidents(liste_temp)[0][0]
+                break  # Sortir de la boucle dès qu'un président est trouvé
+
+    return premier_president_ecologie_climat
 
 
 
