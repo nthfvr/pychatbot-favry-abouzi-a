@@ -9,7 +9,7 @@ Notre projet consiste en la création d'un chatbot en langage Python !!
 
 ## Notice d'Utilisation
 
-Expliquez comment utiliser votre projet de manière concise et claire.
+Run le fichier main, le menu se lance et suivre les instruction disponiblible directement sur le menu terminal
 
 ## Dépendances
 
