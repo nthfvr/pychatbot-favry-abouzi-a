@@ -103,3 +103,20 @@ def ponctuation():
                 texte_nettoye = ""
 minuscule()
 ponctuation()
+
+def tf(chaine):
+#Renvoie le nombre d'occurences de chaque mot dans un fichier
+
+    dictionnaire_mot = {}
+    liste_mots = chaine.split()
+    liste_mots_sans_doublon = set(liste_mots)
+
+    for word in liste_mots_sans_doublon:
+        valeur = 0
+        for mot_correspondant in liste_mots:
+            if word == mot_correspondant:
+                valeur += 1
+        dictionnaire_mot[word] = valeur
+
+
+    return dictionnaire_mot
