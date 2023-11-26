@@ -209,3 +209,10 @@ def calculer_tfidf(repertoire):
     for i in range(len(set_mots)):
         dico_matrice[set_mots[i]]=matrice_tfidf[i]
     return [(matrice_tfidf), dico_matrice]
+
+#1
+tfidf=(calculer_tfidf("cleaned\\"))
+def mot_non_important(repertoire):
+    files_names=list_of_files(repertoire, "txt")
+    list_mot_0 = [k for (k, val) in tfidf[1].items() if val==[0 for i in range(len(files_names))]]
+    return (list_mot_0)
