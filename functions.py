@@ -108,5 +108,113 @@ def ponctuation():
             with open("cleaned\\" + names, "w", encoding="utf-8") as fichier_cleaned:
                 fichier_cleaned.write(texte_nettoye)
                 texte_nettoye = ""
-minuscule()
-ponctuation()
+
+
+def tf(chaine):
+#Renvoie le nombre d'occurences de chaque mot dans un fichier
+
+    dictionnaire_mot = {}
+    liste_mots = chaine.split()
+    liste_mots_sans_doublon = set(liste_mots)
+
+    for word in liste_mots_sans_doublon:
+        valeur = 0
+        for mot_correspondant in liste_mots:
+            if word == mot_correspondant:
+                valeur += 1
+        dictionnaire_mot[word] = valeur
+
+
+    return dictionnaire_mot
+
+
+import math
+
+
+# Fonction qui calcule le score IDF pour chaque mot dans un répertoire de fichiers texte
+def IDF(repertoire):
+    # Récupération de la liste des noms de fichiers texte dans le répertoire
+    files_names = list_of_files(repertoire, "txt")
+    # Initialisation d'un ensemble pour stocker tous les mots uniques dans les documents
+    set_mots = set([])
+    # Initialisation du nombre total de documents
+    nb_doc = 0
+    # Boucle pour parcourir chaque fichier dans le répertoire
+    for names in files_names:
+        # Lecture du contenu du fichier
+        with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            # Division du contenu en une liste de mots
+            liste_de_mots = contenu.split()
+            # Ajout de chaque mot à l'ensemble des mots uniques
+            for mots in liste_de_mots:
+                set_mots.add(mots)
+            # Incrémentation du nombre de documents
+            nb_doc += 1
+    # Initialisation d'un dictionnaire pour stocker le nombre d'occurrences de chaque mot dans les documents
+    dico_occurence_mot = {}
+    # Boucle pour chaque mot unique dans l'ensemble de mots
+    for mots in set_mots:
+        # Initialisation du compteur d'occurrences pour le mot en cours
+        cpt_occu_doc = 0
+        # Boucle pour chaque fichier dans le répertoire
+        for names in files_names:
+            # Lecture du contenu du fichier
+            with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
+                contenu = fichier_cleaned.read()
+                # Division du contenu en une liste de mots
+                liste_de_mots = contenu.split()
+                # Vérification de l'occurrence du mot dans le fichier
+                if mots in liste_de_mots:
+                    cpt_occu_doc += 1
+        # Stockage du nombre d'occurrences du mot dans le dictionnaire
+        dico_occurence_mot[mots] = cpt_occu_doc
+    # Initialisation d'un dictionnaire pour stocker le score IDF de chaque mot
+    score_idf = {}
+    # Boucle pour chaque mot dans le dictionnaire d'occurrences
+    for cle in dico_occurence_mot.keys():
+        # Calcul du score IDF et stockage dans le dictionnaire
+        score_idf[cle] = math.log10((nb_doc / (dico_occurence_mot[cle]+1)))
+    # Retourne le dictionnaire final des scores IDF pour chaque mot
+    return score_idf
+
+
+
+def calculer_tfidf(repertoire):
+    files_names = list_of_files(repertoire, "txt")
+    set_mots = []
+    for names in files_names:
+        with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            liste_de_mots = contenu.split()
+            for mots in liste_de_mots:
+                set_mots.append(mots)
+    set_mots=list(set(set_mots))
+
+
+    idf=IDF("cleaned\\")
+
+    matrice_tfidf = [[] for i in range(len(set_mots))]
+    i=0
+    for names in files_names:
+        i=0
+        mot_du_fichier = set([])
+        with open("cleaned\\" + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            tf_fichier = tf(contenu)
+            liste_de_mots = contenu.split()
+            for mots in liste_de_mots:
+                mot_du_fichier.add(mots)
+            for mot in set_mots:
+                if mot in mot_du_fichier:
+                    tf_mot=tf_fichier[mot]
+                    idf_mot=idf[mot]
+                    matrice_tfidf[i].append(tf_mot*idf_mot)
+                else :
+                    matrice_tfidf[i].append(0)
+                i+=1
+    #creation dictionaire pour associer le mot a ses scores tf-idf
+    dico_matrice={}
+    for i in range(len(set_mots)):
+        dico_matrice[set_mots[i]]=matrice_tfidf[i]
+    return [(matrice_tfidf), dico_matrice]
