@@ -108,5 +108,38 @@ def ponctuation():
             with open("cleaned\\" + names, "w", encoding="utf-8") as fichier_cleaned:
                 fichier_cleaned.write(texte_nettoye)
                 texte_nettoye = ""
-minuscule()
-ponctuation()
+
+
+#4
+def mot_max_occurrences(directory, extension,mot_recherche):
+    # Liste des fichiers dans le répertoire avec l'extension spécifiée
+    files_names = list_of_files(directory, extension)
+
+    # Initialisation des variables pour le fichier avec le plus grand nombre d'occurrences
+    fichier_max_occurrences = None
+    max_occurrences = 0
+
+    # Liste pour stocker les fichiers contenant le mot de recherche
+    fichiers_avec_mot = []
+
+    for filename in files_names:
+        # Construit le chemin complet du fichier
+        chemin_fichier = os.path.join(directory, filename)
+
+        # Lis le contenu du fichier
+        with open(chemin_fichier, 'r', encoding='utf-8') as fichier:
+            contenu = fichier.read()
+
+            # Utilise la fonction tf pour obtenir le nombre d'occurrences du mot de recherché
+            occurrences_mot = tf(contenu).get(mot_recherche, 0)
+
+            # Vérifie si le mot de recherche est présent dans le fichier
+            if occurrences_mot > 0:
+                fichiers_avec_mot.append(filename)
+
+            # Met à jour le fichier avec le plus grand nombre d'occurrences si nécessaire
+            if occurrences_mot > max_occurrences:
+                max_occurrences = occurrences_mot
+                fichier_max_occurrences = filename
+
+    return  fichiers_avec_mot,fichier_max_occurrences
