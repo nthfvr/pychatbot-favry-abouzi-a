@@ -437,3 +437,56 @@ def menu():
 
             case other:
                 choix_utilisateur = choix()
+
+
+def token_quest(question):
+    question_str=""
+    chaine_convertie=""
+    list_ponctuation = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=',
+                        '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
+    for caractere in question:
+        # Vérification si le caractère est une lettre majuscule
+        if 'A' <= caractere <= 'Z':
+            # Conversion en minuscule en ajustant le code ASCII
+            chaine_convertie += chr(ord(caractere) + (ord('a') - ord('A')))
+        else:
+            chaine_convertie += caractere
+    print(chaine_convertie)
+    for char in chaine_convertie:
+        if char=="-" or char=="'":
+            char=" "
+        if char not in list_ponctuation:
+            question_str+=char
+    liste_mot=question_str.split()
+    return liste_mot
+
+def intersection(repertoire, question):
+    mots_vides = ['serait', 'tu', 'sera', 'aurons', 'eux', 'les', 'se', 'des', 'serons', 'mes',
+                            'pourquoi', 'aurions', 'nos', 'auriez', 'qui', 'quand', 'quels', 'c', 'toi', 'auront', 'dans',
+                            'suis', 's', 'auraient', "jusqu'à", 'tes', 'un', 'en', 'étant', 'vous', 'êtes', 'à', 'aux',
+                            'il', 'si', 'pour', 'où', 'seraient', 'sa', 'été', 'au', 'vos', 'entre', 'elle', 'mais', 'seras',
+                            'aurai', 'comment', 'votre', 'ses', 'es', 'serez', 'sur', 'quelles', 'lui', 'serions',
+                            'aura', 'seront', 'j', 'et', 'quoi', 'le', 't', 'me', 'd', 'seriez', 'aurez', 'je', 'sont',
+                            'quelle', 'ma', 'même', 'l', 'n', 'auras', 'notre', 'leur', 'y', 'par', 'avec', 'ton', 'te',
+                            'sommes', 'une', 'nous', 'mon', 'de', 'serai', 'ta', 'on', 'ou', 'ces', 'son', 'ne', 'la',
+                            'serais', 'm', 'a', 'sous', 'que', 'quel', 'aurais', 'aurait', 'moi', 'est', 'du',
+                            'qu', 'ce']
+    files_names = list_of_files(repertoire, "txt")
+    # Initialisation d'un ensemble pour stocker tous les mots uniques dans les documents
+    set_mots = set([])
+    # Boucle pour parcourir chaque fichier dans le répertoire
+    liste_intersection=[]
+    liste_mot_question=token_quest(question)
+    for names in files_names:
+        # Lecture du contenu du fichier
+        with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
+            contenu = fichier_cleaned.read()
+            # Division du contenu en une liste de mots
+            liste_de_mots = contenu.split()
+            # Ajout de chaque mot à l'ensemble des mots uniques
+            for mots in liste_de_mots:
+                set_mots.add(mots)
+    for mot_question in liste_mot_question :
+        if mot_question in set_mots and mot_question not in mots_vides:
+                liste_intersection.append(mot_question)
+    return liste_intersection
