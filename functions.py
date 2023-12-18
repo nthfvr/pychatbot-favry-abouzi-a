@@ -105,20 +105,34 @@ def ponctuation():
 
 
 def tf(chaine):
-    # Renvoie le nombre d'occurences de chaque mot dans un fichier
+    # Cette fonction renvoie le nombre d'occurrences de chaque mot dans une chaîne de texte.
 
+    # Initialisation d'un dictionnaire pour stocker le nombre d'occurrences de chaque mot
     dictionnaire_mot = {}
+
+    # Séparation de la chaîne de texte en une liste de mots
     liste_mots = chaine.split()
+
+    # Création d'une liste sans doublon pour obtenir tous les mots uniques dans la chaîne
     liste_mots_sans_doublon = set(liste_mots)
 
+    # Parcours de la liste des mots uniques
     for word in liste_mots_sans_doublon:
+        # Initialisation de la valeur du mot à 0
         valeur = 0
+
+        # Parcours de la liste complète des mots pour compter les occurrences du mot actuel
         for mot_correspondant in liste_mots:
+            # Si le mot actuel est égal au mot correspondant, incrémenter la valeur
             if word == mot_correspondant:
                 valeur += 1
+
+        # Stockage du nombre d'occurrences du mot dans le dictionnaire
         dictionnaire_mot[word] = valeur
 
+    # Retour du dictionnaire contenant le nombre d'occurrences de chaque mot
     return dictionnaire_mot
+
 
 
 import math
@@ -172,43 +186,75 @@ def IDF(repertoire):
     return score_idf
 
 
+
+# Fonction pour calculer la matrice TF-IDF
 def calculer_tfidf(repertoire):
+    # Obtention de la liste des noms de fichiers dans le répertoire donné avec l'extension "txt"
     files_names = list_of_files(repertoire, "txt")
+
+    # Initialisation d'une liste pour stocker tous les mots uniques dans les fichiers
     set_mots = []
+
+    # Parcours de chaque fichier dans le répertoire
     for names in files_names:
+        # Lecture du fichier en cours
         with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
             contenu = fichier_cleaned.read()
+
+            # Séparation du contenu du fichier en mots
             liste_de_mots = contenu.split()
+
+            # Ajout de chaque mot à la liste des mots uniques
             for mots in liste_de_mots:
                 set_mots.append(mots)
+
+    # Élimination des doublons pour obtenir la liste finale de mots uniques
     set_mots = list(set(set_mots))
 
+    # Initialisation de la classe IDF avec le répertoire spécifié
     idf = IDF("cleaned\\")
 
+    # Initialisation d'une matrice vide pour stocker les scores TF-IDF de chaque mot pour chaque fichier
     matrice_tfidf = [[] for i in range(len(set_mots))]
-    i = 0
+
+    # Parcours de chaque fichier dans le répertoire pour calculer les scores TF-IDF
     for names in files_names:
         i = 0
         mot_du_fichier = set([])
+
+        # Lecture du fichier en cours
         with open("cleaned\\" + names, "r", encoding="utf-8") as fichier_cleaned:
             contenu = fichier_cleaned.read()
+
+            # Calcul du score TF pour chaque mot dans le fichier
             tf_fichier = tf(contenu)
+
+            # Séparation du contenu du fichier en mots
             liste_de_mots = contenu.split()
+
+            # Ajout de chaque mot du fichier à un ensemble
             for mots in liste_de_mots:
                 mot_du_fichier.add(mots)
+
+            # Calcul du score TF-IDF pour chaque mot unique par rapport à tous les mots uniques
             for mot in set_mots:
                 if mot in mot_du_fichier:
                     tf_mot = tf_fichier[mot]
                     idf_mot = idf[mot]
                     matrice_tfidf[i].append(tf_mot * idf_mot)
                 else:
+                    # Si le mot n'est pas présent dans le fichier, le score TF-IDF est fixé à 0
                     matrice_tfidf[i].append(0)
                 i += 1
-    # creation dictionaire pour associer le mot a ses scores tf-idf
+
+    # Création d'un dictionnaire associant chaque mot à ses scores TF-IDF respectifs
     dico_matrice = {}
     for i in range(len(set_mots)):
         dico_matrice[set_mots[i]] = matrice_tfidf[i]
+
+    # Retourne la matrice TF-IDF et le dictionnaire associatif
     return [(matrice_tfidf), dico_matrice]
+
 
 
 ## Fonctionalité à developper
@@ -216,49 +262,93 @@ def calculer_tfidf(repertoire):
 tfidf = (calculer_tfidf("cleaned\\"))
 
 
+# Fonction qui retourne une liste de mots non importants dans un répertoire donné
 def mot_non_important(repertoire):
+    # Récupère la liste des noms de fichiers ayant l'extension "txt" dans le répertoire spécifié
     files_names = list_of_files(repertoire, "txt")
-    list_mot_0 = [k for (k, val) in tfidf[1].items() if val == [0 for i in range(len(files_names))]]
-    return (list_mot_0)
+
+    # Filtre les mots ayant une valeur TF-IDF égale à zéro pour tous les fichiers
+    list_mot_0 = [mot for (mot, valeurs) in tfidf[1].items() if valeurs == [0 for i in range(len(files_names))]]
+
+    # Retourne la liste des mots non importants
+    return list_mot_0
+
 
 
 # 2
 def score_eleve(repertoire):
+    # Obtient la liste des noms de fichiers dans le répertoire avec l'extension "txt"
     files_names = list_of_files(repertoire, "txt")
+
+    # Initialise une liste vide pour stocker les mots clés
     list_mot_0 = []
+
+    # Initialise un dictionnaire pour stocker la valeur TF-IDF moyenne de chaque mot clé
     dico_valeur_mot = {}
+
+    # Calcule la valeur moyenne de TF-IDF pour chaque mot clé
     for (k, val) in tfidf[1].items():
         somme = 0
+
+        # Calcule la somme des valeurs de TF-IDF pour chaque fichier
         for valeur in val:
             somme += valeur
+
+        # Calcule la valeur moyenne et l'ajoute au dictionnaire
         dico_valeur_mot[k] = somme / len(files_names)
+
+    # Convertit les valeurs du dictionnaire en une liste
     liste_valeur = list(dico_valeur_mot.values())
+
+    # Initialise la valeur maximale avec la première valeur de la liste
     maximum = liste_valeur[0]
-    # Parcourir la liste pour trouver le maximum
+
+    # Parcourt la liste pour trouver la valeur maximale
     for element in liste_valeur:
         if element > maximum:
             maximum = element
+
+    # Initialise une liste pour stocker les mots clés ayant la valeur maximale
     liste_mot_max = []
+
+    # Parcourt le dictionnaire pour trouver les mots clés ayant la valeur maximale
     for keys in dico_valeur_mot.keys():
         if dico_valeur_mot[keys] == maximum:
             liste_mot_max.append(keys)
+
+    # Retourne la liste des mots clés ayant la valeur TF-IDF maximale
     return liste_mot_max
 
 
-def rassemblement_discours():  # permet de rassembler les discours d'un meme president dans un meme fichier(pour fct3 et 6)
+
+def rassemblement_discours():   # permet de rassembler les discours d'un meme president dans un meme fichier(pour fct3 et 6)
+
     nomspresident = noms_presidents(files_names)[0]
+
+    # Corrige une erreur de nom en remplaçant 'GiscarddEstaing' par 'Giscard dEstaing'
     index_element = nomspresident.index('GiscarddEstaing')
     nomspresident[index_element] = 'Giscard dEstaing'
 
+    # Élimine les doublons dans la liste des noms de présidents
     nomspresident = list(set(nomspresident))
+
+    # Obtient la liste des noms de fichiers dans le répertoire "./cleaned" avec l'extension ".txt"
     filesnames = list_of_files(("./cleaned"), "txt")
 
+    # Parcourt chaque nom de président
     for nom in nomspresident:
+        # Parcourt chaque nom de fichier dans le répertoire "./cleaned"
         for filename in filesnames:
+            # Vérifie si le nom du président est présent dans le nom du fichier
             if nom in filename:
-                with open("textes_president_en_un_meme_fichier\\" + nom + ".txt", "a", encoding="utf-8") as fichier1:
+                # Ouvre le fichier de sortie en mode append
+                with open("textes_president_en_un_meme_fichier\\" + nom + ".txt", "a",
+                            encoding="utf-8") as fichier1:
+                    # Ouvre le fichier source en mode lecture
                     with open("cleaned\\" + filename, "r", encoding="utf-8") as fichier2:
+                        # Lit le contenu du fichier source
                         contenu = fichier2.read()
+                        # Écrit le contenu dans le fichier de sortie
                         fichier1.write(contenu)
 
 
@@ -451,10 +541,15 @@ def menu():
 
 
 def token_quest(question):
+    # Initialisation des variables
     question_str = ""
     chaine_convertie = ""
+
+    # Liste des caractères de ponctuation à exclure
     list_ponctuation = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=',
                         '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
+
+    # Parcours de chaque caractère dans la question
     for caractere in question:
         # Vérification si le caractère est une lettre majuscule
         if 'A' <= caractere <= 'Z':
@@ -462,16 +557,25 @@ def token_quest(question):
             chaine_convertie += chr(ord(caractere) + (ord('a') - ord('A')))
         else:
             chaine_convertie += caractere
+
+    # Parcours de chaque caractère converti
     for char in chaine_convertie:
+        # Remplacement des caractères spécifiques par des espaces
         if char == "-" or char == "'":
             char = " "
+        # Exclusion des caractères de ponctuation
         if char not in list_ponctuation:
             question_str += char
+
+    # Création d'une liste de mots en séparant la chaîne par les espaces
     liste_mot = question_str.split()
-    return liste_mot
+
+    # Retourne la liste de mots obtenue après le traitement
+    return liste_mot, question_str
 
 
 def intersection(repertoire, question):
+    # Liste des mots vides à exclure de l'analyse
     mots_vides = ['serait', 'tu', 'sera', 'aurons', 'eux', 'les', 'se', 'des', 'serons', 'mes',
                   'pourquoi', 'aurions', 'nos', 'auriez', 'qui', 'quand', 'quels', 'c', 'toi', 'auront', 'dans',
                   'suis', 's', 'auraient', "jusqu'à", 'tes', 'un', 'en', 'étant', 'vous', 'êtes', 'à', 'aux',
@@ -482,12 +586,14 @@ def intersection(repertoire, question):
                   'sommes', 'une', 'nous', 'mon', 'de', 'serai', 'ta', 'on', 'ou', 'ces', 'son', 'ne', 'la',
                   'serais', 'm', 'a', 'sous', 'que', 'quel', 'aurais', 'aurait', 'moi', 'est', 'du',
                   'qu', 'ce']
+
+    # Liste des noms de fichiers dans le répertoire avec l'extension "txt"
     files_names = list_of_files(repertoire, "txt")
+
     # Initialisation d'un ensemble pour stocker tous les mots uniques dans les documents
     set_mots = set([])
+
     # Boucle pour parcourir chaque fichier dans le répertoire
-    liste_intersection = []
-    liste_mot_question = token_quest(question)
     for names in files_names:
         # Lecture du contenu du fichier
         with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
@@ -497,23 +603,45 @@ def intersection(repertoire, question):
             # Ajout de chaque mot à l'ensemble des mots uniques
             for mots in liste_de_mots:
                 set_mots.add(mots)
+
+    # Liste des mots dans la question
+    liste_mot_question = token_quest(question)[0]
+
+    # Initialisation de la liste d'intersection des mots entre la question et les documents
+    liste_intersection = []
+
+    # Boucle pour chaque mot dans la question
     for mot_question in liste_mot_question:
+        # Vérification de la présence du mot dans l'ensemble des mots uniques et exclusion des mots vides
         if mot_question in set_mots and mot_question not in mots_vides:
             liste_intersection.append(mot_question)
+
+    # Retourne la liste des mots en commun entre la question et les documents
     return liste_intersection
 
 
+# Fonction tfquestion : calcule la fréquence d'apparition de chaque mot dans une liste par rapport à une question donnée.
+
 def tfquestion(liste, question):
+    # Initialisation d'un dictionnaire pour stocker les résultats
     dictionnaire_mot = {}
 
+    # Parcours de chaque mot dans la liste
     for word in liste:
+        # Initialisation de la valeur à 0 pour chaque mot
         valeur = 0
-        for mot_correspondant in token_quest(question):
+        # Parcours de chaque mot dans la question après tokenisation
+        for mot_correspondant in token_quest(question)[0]:
+            # Si le mot de la liste est identique au mot de la question
             if word == mot_correspondant:
+                # Incrémentation de la valeur
                 valeur += 1
+        # Stockage de la valeur associée au mot dans le dictionnaire
         dictionnaire_mot[word] = valeur
 
+    # Retourne le dictionnaire contenant la fréquence d'apparition de chaque mot
     return dictionnaire_mot
+
 
 
 def calculer_tfidfquestion(question):
@@ -551,26 +679,50 @@ def similarite(vecteur1, vecteur2):
     return similarite
 
 
+# Fonction qui détermine le document le plus pertinent par rapport à une question donnée
 def document_pertinent(question):
+    # Obtention de la liste des noms de fichiers dans le répertoire "./speeches" avec l'extension "txt"
     files_names = list_of_files("./speeches", "txt")
+
+    # Récupération du corpus TF-IDF (Term Frequency-Inverse Document Frequency)
     tfidf_corpus = tfidf[1]
+
+    # Calcul du vecteur TF-IDF pour la question en cours
     tfidf_question = list(calculer_tfidfquestion(question).values())
+
+    # Obtention des mots communs entre la question et les documents du répertoire "cleaned\\"
     inter = intersection("cleaned\\", question)
 
+    # Initialisation de la similarité maximale et du nom du document correspondant
     sim_max = [-1, files_names[0]]
+
+    # Parcours de chaque document dans le répertoire
     i = 0
     for names in files_names:
+        # Initialisation du vecteur d'intersection pour chaque document
         vecteur_inter = []
+
+        # Calcul du vecteur TF-IDF pour chaque mot commun entre la question et le document
         for mot in inter:
             vecteur_inter.append(tfidf_corpus[mot][i])
+
         i += 1
+
+        # Vérification que la norme du vecteur d'intersection n'est pas nulle
         if norme(vecteur_inter) != 0:
+            # Calcul de la similarité entre le vecteur d'intersection et le vecteur TF-IDF de la question
             sim = similarite(vecteur_inter, tfidf_question)
+
+            # Mise à jour de la similarité maximale et du nom du document si la similarité actuelle est plus grande
             if sim > (sim_max)[0]:
                 sim_max[0] = sim
                 sim_max[1] = names
+
+    # Récupération du document le plus pertinent
     doc = (sim_max)[1]
+
+    # Retourne le nom du document le plus pertinent
     return sim_max[1]
 
 
-
+print(document_pertinent("impératifs supérieurs de cohésion nationale et d unité de la république soient respectés l autorité"))
