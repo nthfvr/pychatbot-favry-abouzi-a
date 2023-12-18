@@ -10,7 +10,7 @@ def list_of_files(directory, extension):
 
 directory = "./speeches"
 files_names = list_of_files(directory, "txt")
-print(files_names)
+
 
 def noms_presidents(noms_fichiers):
     # Renvoie une liste des noms des présidents à partir des noms des fichiers.
@@ -106,7 +106,11 @@ def tf(chaine):
 
     dictionnaire_mot = {}
     liste_mots = chaine.split()
-    liste_mots_sans_doublon = set(liste_mots)
+    liste_mots_sans_doublon = []
+
+    for mot in liste_mots:
+        if not mot in liste_mots_sans_doublon:
+            liste_mots_sans_doublon.append(mot)
 
     for word in liste_mots_sans_doublon:
         valeur = 0
@@ -119,7 +123,6 @@ def tf(chaine):
     return dictionnaire_mot
 
 
-import math
 
 
 # Fonction qui calcule le score IDF pour chaque mot dans un répertoire de fichiers texte
@@ -490,3 +493,31 @@ def intersection(repertoire, question):
         if mot_question in set_mots and mot_question not in mots_vides:
                 liste_intersection.append(mot_question)
     return liste_intersection
+
+
+
+
+
+def produitscalaire(vecteur1,vecteur2):
+#Calcule le produit scalaire de 2 vecteurs TF-IDF
+    produitscalaire = 0
+    for i in range(len(vecteur1)):
+        produitscalaire += (vecteur1[i] * vecteur2[i])
+    return produitscalaire
+
+def norme(vecteur):
+#Retourne la norme d'un vecteur TF-IDF
+    somme = 0
+    for valeur in vecteur:
+        somme += (valeur ** 2)
+    norme = math.sqrt(somme)
+
+    return norme
+
+def similarite(vecteur1,vecteur2):
+#Calcule la similarité entre deux vecteurs TF-IDF
+    similarite = (produitscalaire(vecteur1,vecteur2))/(norme(vecteur1)*norme(vecteur2))
+
+    return similarite
+
+
