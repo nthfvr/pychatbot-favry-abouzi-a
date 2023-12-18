@@ -1,15 +1,18 @@
 import os
 import math
-def list_of_files(directory, extension):
 
+
+def list_of_files(directory, extension):
     files_names = []
     for filename in os.listdir(directory):
         if filename.endswith(extension):
             files_names.append(filename)
     return files_names
 
+
 directory = "./speeches"
 files_names = list_of_files(directory, "txt")
+print(files_names)
 
 
 def noms_presidents(noms_fichiers):
@@ -31,8 +34,9 @@ def noms_presidents(noms_fichiers):
         liste_presidents.append(nouveau_nom)
 
     dictionnaire_presidents = dict.fromkeys(set(liste_presidents))
-    return liste_presidents,dictionnaire_presidents
-  
+    return liste_presidents, dictionnaire_presidents
+
+
 # Fonction pour convertir le texte en minuscules
 def minuscule():
     # on recupere les noms des fichier dans "speeches"
@@ -68,7 +72,6 @@ def minuscule():
                 fichier_minuscule.write(ligne)
 
 
-
 # Fonction pour supprimer la ponctuation
 def ponctuation():
     texte_nettoye = ""
@@ -102,15 +105,11 @@ def ponctuation():
 
 
 def tf(chaine):
-#Renvoie le nombre d'occurences de chaque mot dans un fichier
+    # Renvoie le nombre d'occurences de chaque mot dans un fichier
 
     dictionnaire_mot = {}
     liste_mots = chaine.split()
-    liste_mots_sans_doublon = []
-
-    for mot in liste_mots:
-        if not mot in liste_mots_sans_doublon:
-            liste_mots_sans_doublon.append(mot)
+    liste_mots_sans_doublon = set(liste_mots)
 
     for word in liste_mots_sans_doublon:
         valeur = 0
@@ -119,10 +118,10 @@ def tf(chaine):
                 valeur += 1
         dictionnaire_mot[word] = valeur
 
-
     return dictionnaire_mot
 
 
+import math
 
 
 # Fonction qui calcule le score IDF pour chaque mot dans un répertoire de fichiers texte
@@ -173,7 +172,6 @@ def IDF(repertoire):
     return score_idf
 
 
-
 def calculer_tfidf(repertoire):
     files_names = list_of_files(repertoire, "txt")
     set_mots = []
@@ -183,15 +181,14 @@ def calculer_tfidf(repertoire):
             liste_de_mots = contenu.split()
             for mots in liste_de_mots:
                 set_mots.append(mots)
-    set_mots=list(set(set_mots))
+    set_mots = list(set(set_mots))
 
-
-    idf=IDF("cleaned\\")
+    idf = IDF("cleaned\\")
 
     matrice_tfidf = [[] for i in range(len(set_mots))]
-    i=0
+    i = 0
     for names in files_names:
-        i=0
+        i = 0
         mot_du_fichier = set([])
         with open("cleaned\\" + names, "r", encoding="utf-8") as fichier_cleaned:
             contenu = fichier_cleaned.read()
@@ -201,51 +198,54 @@ def calculer_tfidf(repertoire):
                 mot_du_fichier.add(mots)
             for mot in set_mots:
                 if mot in mot_du_fichier:
-                    tf_mot=tf_fichier[mot]
-                    idf_mot=idf[mot]
-                    matrice_tfidf[i].append(tf_mot*idf_mot)
-                else :
+                    tf_mot = tf_fichier[mot]
+                    idf_mot = idf[mot]
+                    matrice_tfidf[i].append(tf_mot * idf_mot)
+                else:
                     matrice_tfidf[i].append(0)
-                i+=1
-    #creation dictionaire pour associer le mot a ses scores tf-idf
-    dico_matrice={}
+                i += 1
+    # creation dictionaire pour associer le mot a ses scores tf-idf
+    dico_matrice = {}
     for i in range(len(set_mots)):
-        dico_matrice[set_mots[i]]=matrice_tfidf[i]
+        dico_matrice[set_mots[i]] = matrice_tfidf[i]
     return [(matrice_tfidf), dico_matrice]
 
 
-
 ## Fonctionalité à developper
-#1
-tfidf=(calculer_tfidf("cleaned\\"))
+# 1
+tfidf = (calculer_tfidf("cleaned\\"))
+
+
 def mot_non_important(repertoire):
-    files_names=list_of_files(repertoire, "txt")
-    list_mot_0 = [k for (k, val) in tfidf[1].items() if val==[0 for i in range(len(files_names))]]
+    files_names = list_of_files(repertoire, "txt")
+    list_mot_0 = [k for (k, val) in tfidf[1].items() if val == [0 for i in range(len(files_names))]]
     return (list_mot_0)
 
-#2
+
+# 2
 def score_eleve(repertoire):
-    files_names=list_of_files(repertoire, "txt")
+    files_names = list_of_files(repertoire, "txt")
     list_mot_0 = []
-    dico_valeur_mot={}
+    dico_valeur_mot = {}
     for (k, val) in tfidf[1].items():
-        somme=0
+        somme = 0
         for valeur in val:
-            somme+=valeur
-        dico_valeur_mot[k]=somme/len(files_names)
-    liste_valeur=list(dico_valeur_mot.values())
+            somme += valeur
+        dico_valeur_mot[k] = somme / len(files_names)
+    liste_valeur = list(dico_valeur_mot.values())
     maximum = liste_valeur[0]
     # Parcourir la liste pour trouver le maximum
     for element in liste_valeur:
         if element > maximum:
             maximum = element
-    liste_mot_max=[]
+    liste_mot_max = []
     for keys in dico_valeur_mot.keys():
-        if dico_valeur_mot[keys]==maximum:
+        if dico_valeur_mot[keys] == maximum:
             liste_mot_max.append(keys)
     return liste_mot_max
 
-def rassemblement_discours():       #permet de rassembler les discours d'un meme president dans un meme fichier(pour fct3 et 6)
+
+def rassemblement_discours():  # permet de rassembler les discours d'un meme president dans un meme fichier(pour fct3 et 6)
     nomspresident = noms_presidents(files_names)[0]
     index_element = nomspresident.index('GiscarddEstaing')
     nomspresident[index_element] = 'Giscard dEstaing'
@@ -260,9 +260,12 @@ def rassemblement_discours():       #permet de rassembler les discours d'un meme
                     with open("cleaned\\" + filename, "r", encoding="utf-8") as fichier2:
                         contenu = fichier2.read()
                         fichier1.write(contenu)
+
+
 rassemblement_discours()
 
-#3
+
+# 3
 def mots_repete_chirac():
     occurrences = {}
     with open("textes_president_en_un_meme_fichier\\Chirac.txt", "r", encoding="utf-8") as fichier_cleaned:
@@ -285,7 +288,8 @@ def mots_repete_chirac():
             liste_mot_max.append(keys)
     return liste_mot_max
 
-#4
+
+# 4
 def mot_max_occurrences(directory, extension, mot_recherche):
     # Liste des fichiers dans le répertoire avec l'extension spécifiée
     files_names = list_of_files(directory, extension)
@@ -306,7 +310,7 @@ def mot_max_occurrences(directory, extension, mot_recherche):
             contenu = fichier.read()
 
             # Utilise la fonction tf pour obtenir le nombre d'occurrences du mot de recherché
-            occurrences_mot = tf(contenu).get(mot_recherche,0)
+            occurrences_mot = tf(contenu).get(mot_recherche, 0)
 
             # Vérifie si le mot de recherche est présent dans le fichier
             if occurrences_mot > 0:
@@ -317,9 +321,10 @@ def mot_max_occurrences(directory, extension, mot_recherche):
                 max_occurrences = occurrences_mot
                 fichier_max_occurrences = filename
 
-    return  fichiers_avec_mot,fichier_max_occurrences
+    return fichiers_avec_mot, fichier_max_occurrences
 
-#5
+
+# 5
 def premier_president_ecologie_climat(directory, extension):
     # Liste des fichiers dans le répertoire avec l'extension spécifiée
     noms_fichier_local = list_of_files(directory, extension)
@@ -335,7 +340,7 @@ def premier_president_ecologie_climat(directory, extension):
         # Lire le contenu du fichier
         with open(chemin_fichier, 'r', encoding='utf-8') as fichier:
             contenu_president = fichier.read()
-            #ajoute le nom du fichier à une liste pour pouvoir utiliser la fonction nom président dessus
+            # ajoute le nom du fichier à une liste pour pouvoir utiliser la fonction nom président dessus
             liste_temp.append(filename)
             # Vérifier si le fichier mentionne l'écologie ou le climat
             if 'écologie' in contenu_president or 'climat' in contenu_president:
@@ -345,9 +350,7 @@ def premier_president_ecologie_climat(directory, extension):
     return premier_president_ecologie_climat
 
 
-
-
-#6
+# 6
 def mots_evoques():
     filesnames = list_of_files(("./cleaned"), "txt")
     set_mots = set([])
@@ -388,20 +391,25 @@ def mots_evoques():
 
 
 def choix():
-    print("---------------------------------------------------------------------------------------------------------------------------")
+    print(
+        "---------------------------------------------------------------------------------------------------------------------------")
     print("Sélectionner une option :")
     print("1 :Afficher la liste des mots les moins importants dans le corpus de documents")
     print("2 :Afficher le(s) mot(s) ayant le score TD-IDF le plus élevé")
     print("3 :Indiquer le(s) mot(s) le(s) plus répété(s) par le président Chirac")
-    print("4 :Indiquer le(s) fichiers(s) du(des) président(s) qui a (ont) parlé de la « Nation » et celui qui l’a répété le plus de fois")
+    print(
+        "4 :Indiquer le(s) fichiers(s) du(des) président(s) qui a (ont) parlé de la « Nation » et celui qui l’a répété le plus de fois")
     print("5 :Indiquer le premier président à parler du climat et/ou de l’écologie")
-    print("6 :Hormis les mots dits « non importants », quel(s) est(sont) le(s) mot(s) que tous les présidents ont évoqués.")
-    print("---------------------------------------------------------------------------------------------------------------------------")
-    liste_choix = [str(i) for i in range(1,7)]
+    print(
+        "6 :Hormis les mots dits « non importants », quel(s) est(sont) le(s) mot(s) que tous les présidents ont évoqués.")
+    print(
+        "---------------------------------------------------------------------------------------------------------------------------")
+    liste_choix = [str(i) for i in range(1, 7)]
     choix = None
     while not choix in liste_choix:
         choix = input("Quel est votre choix: ")
     return choix
+
 
 def menu():
     running = True
@@ -424,11 +432,11 @@ def menu():
                     print(value)
 
             case "4":
-                resultat = mot_max_occurrences("cleaned",".txt","nation")
+                resultat = mot_max_occurrences("cleaned", ".txt", "nation")
                 print("Fichiers avec le mot 'nation' :", resultat[0])
                 print("Fichier avec le plus grand nombre d'occurrences de 'nation' :", resultat[1])
             case "5":
-                resultat = premier_president_ecologie_climat("cleaned",".txt")
+                resultat = premier_president_ecologie_climat("cleaned", ".txt")
                 if resultat:
                     print(f"Le premier président à parler d'écologie ou de climat est : {resultat}")
                 else:
@@ -443,8 +451,8 @@ def menu():
 
 
 def token_quest(question):
-    question_str=""
-    chaine_convertie=""
+    question_str = ""
+    chaine_convertie = ""
     list_ponctuation = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=',
                         '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
     for caractere in question:
@@ -455,30 +463,31 @@ def token_quest(question):
         else:
             chaine_convertie += caractere
     for char in chaine_convertie:
-        if char=="-" or char=="'":
-            char=" "
+        if char == "-" or char == "'":
+            char = " "
         if char not in list_ponctuation:
-            question_str+=char
-    liste_mot=question_str.split()
+            question_str += char
+    liste_mot = question_str.split()
     return liste_mot
+
 
 def intersection(repertoire, question):
     mots_vides = ['serait', 'tu', 'sera', 'aurons', 'eux', 'les', 'se', 'des', 'serons', 'mes',
-                            'pourquoi', 'aurions', 'nos', 'auriez', 'qui', 'quand', 'quels', 'c', 'toi', 'auront', 'dans',
-                            'suis', 's', 'auraient', "jusqu'à", 'tes', 'un', 'en', 'étant', 'vous', 'êtes', 'à', 'aux',
-                            'il', 'si', 'pour', 'où', 'seraient', 'sa', 'été', 'au', 'vos', 'entre', 'elle', 'mais', 'seras',
-                            'aurai', 'comment', 'votre', 'ses', 'es', 'serez', 'sur', 'quelles', 'lui', 'serions',
-                            'aura', 'seront', 'j', 'et', 'quoi', 'le', 't', 'me', 'd', 'seriez', 'aurez', 'je', 'sont',
-                            'quelle', 'ma', 'même', 'l', 'n', 'auras', 'notre', 'leur', 'y', 'par', 'avec', 'ton', 'te',
-                            'sommes', 'une', 'nous', 'mon', 'de', 'serai', 'ta', 'on', 'ou', 'ces', 'son', 'ne', 'la',
-                            'serais', 'm', 'a', 'sous', 'que', 'quel', 'aurais', 'aurait', 'moi', 'est', 'du',
-                            'qu', 'ce']
+                  'pourquoi', 'aurions', 'nos', 'auriez', 'qui', 'quand', 'quels', 'c', 'toi', 'auront', 'dans',
+                  'suis', 's', 'auraient', "jusqu'à", 'tes', 'un', 'en', 'étant', 'vous', 'êtes', 'à', 'aux',
+                  'il', 'si', 'pour', 'où', 'seraient', 'sa', 'été', 'au', 'vos', 'entre', 'elle', 'mais', 'seras',
+                  'aurai', 'comment', 'votre', 'ses', 'es', 'serez', 'sur', 'quelles', 'lui', 'serions',
+                  'aura', 'seront', 'j', 'et', 'quoi', 'le', 't', 'me', 'd', 'seriez', 'aurez', 'je', 'sont',
+                  'quelle', 'ma', 'même', 'l', 'n', 'auras', 'notre', 'leur', 'y', 'par', 'avec', 'ton', 'te',
+                  'sommes', 'une', 'nous', 'mon', 'de', 'serai', 'ta', 'on', 'ou', 'ces', 'son', 'ne', 'la',
+                  'serais', 'm', 'a', 'sous', 'que', 'quel', 'aurais', 'aurait', 'moi', 'est', 'du',
+                  'qu', 'ce']
     files_names = list_of_files(repertoire, "txt")
     # Initialisation d'un ensemble pour stocker tous les mots uniques dans les documents
     set_mots = set([])
     # Boucle pour parcourir chaque fichier dans le répertoire
-    liste_intersection=[]
-    liste_mot_question=token_quest(question)
+    liste_intersection = []
+    liste_mot_question = token_quest(question)
     for names in files_names:
         # Lecture du contenu du fichier
         with open(repertoire + names, "r", encoding="utf-8") as fichier_cleaned:
@@ -488,11 +497,10 @@ def intersection(repertoire, question):
             # Ajout de chaque mot à l'ensemble des mots uniques
             for mots in liste_de_mots:
                 set_mots.add(mots)
-    for mot_question in liste_mot_question :
+    for mot_question in liste_mot_question:
         if mot_question in set_mots and mot_question not in mots_vides:
-                liste_intersection.append(mot_question)
+            liste_intersection.append(mot_question)
     return liste_intersection
-
 
 
 def tfquestion(liste, question):
@@ -500,49 +508,69 @@ def tfquestion(liste, question):
 
     for word in liste:
         valeur = 0
-        for mot_correspondant in token_quest(question) :
+        for mot_correspondant in token_quest(question):
             if word == mot_correspondant:
                 valeur += 1
         dictionnaire_mot[word] = valeur
 
-
     return dictionnaire_mot
 
-def calculer_tfidfquestion(repertoire, question):
-    dico_matrice={}
-    idf=IDF("cleaned\\")
-    inter=intersection("cleaned\\",question)
-    tf=tfquestion(inter,question)
+
+def calculer_tfidfquestion(question):
+    dico_matrice = {}
+    idf = IDF("cleaned\\")
+    inter = intersection("cleaned\\", question)
+    tf = tfquestion(inter, question)
 
     for mot in inter:
-        dico_matrice[mot]=idf[mot]*tf[mot]
-
-
-
+        dico_matrice[mot] = idf[mot] * tf[mot]
 
     return dico_matrice
 
-  
-def produitscalaire(vecteur1,vecteur2):
-#Calcule le produit scalaire de 2 vecteurs TF-IDF
+
+def produitscalaire(vecteur1, vecteur2):
     produitscalaire = 0
     for i in range(len(vecteur1)):
         produitscalaire += (vecteur1[i] * vecteur2[i])
     return produitscalaire
 
+
 def norme(vecteur):
-#Retourne la norme d'un vecteur TF-IDF
+    norme = 0
     somme = 0
     for valeur in vecteur:
-        somme += (valeur ** 2)
+        somme += valeur ** 2
     norme = math.sqrt(somme)
 
     return norme
 
-def similarite(vecteur1,vecteur2):
-#Calcule la similarité entre deux vecteurs TF-IDF
-    similarite = (produitscalaire(vecteur1,vecteur2))/(norme(vecteur1)*norme(vecteur2))
+
+def similarite(vecteur1, vecteur2):
+    similarite = (produitscalaire(vecteur1, vecteur2)) / (norme(vecteur1) * norme(vecteur2))
 
     return similarite
+
+
+def document_pertinent(question):
+    files_names = list_of_files("./speeches", "txt")
+    tfidf_corpus = tfidf[1]
+    tfidf_question = list(calculer_tfidfquestion(question).values())
+    inter = intersection("cleaned\\", question)
+
+    sim_max = [-1, files_names[0]]
+    i = 0
+    for names in files_names:
+        vecteur_inter = []
+        for mot in inter:
+            vecteur_inter.append(tfidf_corpus[mot][i])
+        i += 1
+        if norme(vecteur_inter) != 0:
+            sim = similarite(vecteur_inter, tfidf_question)
+            if sim > (sim_max)[0]:
+                sim_max[0] = sim
+                sim_max[1] = names
+    doc = (sim_max)[1]
+    return sim_max[1]
+
 
 
