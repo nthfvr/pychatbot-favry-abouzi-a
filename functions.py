@@ -505,7 +505,19 @@ def tfquestion(liste, question):
 
     return dictionnaire_mot
 
+def calculer_tfidfquestion(repertoire, question):
+    dico_matrice={}
+    idf=IDF("cleaned\\")
+    inter=intersection("cleaned\\",question)
+    tf=tfquestion(inter,question)
 
+    for mot in inter:
+        dico_matrice[mot]=idf[mot]*tf[mot]
+
+
+
+
+    return dico_matrice
 
 
 
