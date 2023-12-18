@@ -454,7 +454,6 @@ def token_quest(question):
             chaine_convertie += chr(ord(caractere) + (ord('a') - ord('A')))
         else:
             chaine_convertie += caractere
-    print(chaine_convertie)
     for char in chaine_convertie:
         if char=="-" or char=="'":
             char=" "
@@ -496,8 +495,34 @@ def intersection(repertoire, question):
 
 
 
+def tfquestion(liste, question):
+    dictionnaire_mot = {}
+
+    for word in liste:
+        valeur = 0
+        for mot_correspondant in token_quest(question) :
+            if word == mot_correspondant:
+                valeur += 1
+        dictionnaire_mot[word] = valeur
 
 
+    return dictionnaire_mot
+
+def calculer_tfidfquestion(repertoire, question):
+    dico_matrice={}
+    idf=IDF("cleaned\\")
+    inter=intersection("cleaned\\",question)
+    tf=tfquestion(inter,question)
+
+    for mot in inter:
+        dico_matrice[mot]=idf[mot]*tf[mot]
+
+
+
+
+    return dico_matrice
+
+  
 def produitscalaire(vecteur1,vecteur2):
 #Calcule le produit scalaire de 2 vecteurs TF-IDF
     produitscalaire = 0
