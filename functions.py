@@ -140,9 +140,6 @@ def tf(chaine):
                 valeur += 1
 
 
-    return dictionnaire_mot
-
-
         # Stockage du nombre d'occurrences du mot dans le dictionnaire
         dictionnaire_mot[word] = valeur
 
