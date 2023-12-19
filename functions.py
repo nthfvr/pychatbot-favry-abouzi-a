@@ -1,3 +1,11 @@
+"""
+Projet Chatbot;
+Auteurs : Nathan Favry , Eham Bill Abouzi
+Ce fichier contient toutes les fonctions de base qui servent à faire fonctionner le chatbot. 
+On peut distinguer une première partie consacrée au traitement du texte et une seconde partie
+axée sur la génération d'une réponse. 
+"""
+
 import os
 import math
 
