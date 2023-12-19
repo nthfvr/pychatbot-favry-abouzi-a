@@ -1,9 +1,9 @@
 """
 Projet Chatbot;
 Auteurs : Nathan Favry , Eham Bill Abouzi
-Ce fichier contient toutes les fonctions de base qui servent à faire fonctionner le chatbot. 
+Ce fichier contient toutes les fonctions de base qui servent à faire fonctionner le chatbot.
 On peut distinguer une première partie consacrée au traitement du texte et une seconde partie
-axée sur la génération d'une réponse. 
+axée sur la génération d'une réponse.
 """
 
 import os
@@ -603,7 +603,7 @@ def mode_chatbot():
             running = False
         question = token_quest(question)[1]
         mot = trouvermot(question,ensemble_mots,idf_scores_corpus)
-        document = "speeches/Nomination_Chirac1.txt"
+        document = "speeches/"+ document_pertinent(question)
         print(trouver_phrase(mot,document))
 
 
@@ -658,9 +658,6 @@ matricetransposee = matricetransposee(tfidf[1])
 dictionnairetfidf = tfidf[1]
 ensemble_mots = list(dictionnairetfidf.keys())
 idf_scores_corpus = IDF("cleaned\\")
-
-
-
 
 
 
